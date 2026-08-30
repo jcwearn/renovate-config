@@ -10,5 +10,18 @@
     "pnpmDedupe",
     "gomodTidy",
     "gomodUpdateImportPaths"
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update any value carrying a `# renovate: datasource=... depName=...` comment on the line above it.",
+      "managerFilePatterns": [
+        "/\\.tf$/",
+        "/^\\.github/workflows/[^/]+\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(?:\\s+versioning=(?<versioning>\\S+))?(?:\\s+extractVersion=(?<extractVersion>\\S+))?\\s*\\n\\s*[\\w.-]+\\s*[:=]\\s*\"(?:=\\s*)?(?<currentValue>[^\"]+)\""
+      ]
+    }
   ]
 }

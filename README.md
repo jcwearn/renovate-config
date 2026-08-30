@@ -25,6 +25,20 @@ it up with no hand-editing.
 - `postUpdateOptions` — `npmDedupe`, `pnpmDedupe`, `gomodTidy`, `gomodUpdateImportPaths`. Each is
   read only by its own package manager, so all are inert on repos that don't use them.
 
+- `customManagers` — one regex manager for the `# renovate:` annotation convention: a comment of the
+  form `# renovate: datasource=<ds> depName=<name>` makes Renovate update the quoted value on the
+  next line. `versioning=` and `extractVersion=` are picked up from the same comment when present.
+
+  Renovate reads nothing from these comments on its own, so before this they were inert. Three
+  `tofu_version: "1.12.6"` pins in `truenas-infra`'s workflows carried the annotation and had never
+  produced a single PR.
+
+  The capture deliberately steps over a leading `= `, so a Terraform pin written
+  `version = "= 3.0.0"` keeps its operator across an update. The built-in `terraform` manager cannot:
+  it round-trips the constraint through npm versioning, which has no `=` operator, so it rewrites
+  `= 2.4.1` as a bare `3.0.0`. A repo that pins that way should disable the built-in manager for the
+  file, or the two managers will fight over it.
+
 `config:best-practices` already enables weekly lock file maintenance via `:maintainLockFilesWeekly`,
 so repos don't need to declare `lockFileMaintenance` themselves.
 
